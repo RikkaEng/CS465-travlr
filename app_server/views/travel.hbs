@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<!-- Website template by freewebsitetemplates.com -->
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Travel - Travlr Getaways</title>
+  <!-- absolute path so it works on /travel -->
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+<body>
+  <div id="background">
+    <div id="page">
+      {{> header }}
+
+      <div id="contents">
+        <div class="box">
+          <div>
+            <div class="body">
+              <h1>Travel</h1>
+              <ul id="sites">
+                {{#each trips}}
+                  <li>
+                    <a href="/travel">
+                      <!-- close the img tag properly and use better alt text -->
+                      <img src="/images/{{this.image}}" alt="{{this.name}}">
+                    </a>
+                    <h2><a href="/travel">{{this.name}}</a></h2>
+                    <div class="description">
+                      {{{this.description}}}
+                    </div>
+                  </li>
+                {{/each}}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    {{> footer }}
+  </div>
+</body>
+</html>
