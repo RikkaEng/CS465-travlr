@@ -8,6 +8,8 @@ var handlebars = require('hbs'); // <-- added handle bars
 var indexRouter = require('./app_server/routes/index'); // <-- changed new paths
 var usersRouter = require('./app_server/routes/users'); // <-- changed new paths
 var travelRouter = require('./app_server/routes/travel'); // <-- added
+var apiRouter = require('./app_api/routes/index'); // <-- added module 5
+
 var app = express();
 
 // view engine setup
@@ -16,6 +18,9 @@ app.set('view engine', 'hbs');
 
 // register handlebars partials (https://www.npmjs.com/package/hbs)
 handlebars.registerPartials(__dirname + '/app_server/views/partials'); // <--- added handle bars
+
+// Bring in the database
+require('./app_api/models/db'); // <-- added module 5
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -26,6 +31,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/travel', travelRouter); // <-- added
+app.use('/api', apiRouter); // <-- added module 5
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
