@@ -53,21 +53,39 @@ export class EditTripComponent implements OnInit {
       description: ['', Validators.required]
     })
 
-    this.tripDataService.getTrip(tripCode)
-      .subscribe({
-        next: (value: any) => {
-          this.trip = value;
-          // Populate our record into the form
-          this.editForm.patchValue(value[0]);
-          if(!value)
-          {
-            this.message = 'No Trip Retrieved!';
-          }
-          else{
-            this.message = 'Trip: ' + tripCode + ' retrieved';
-          }
-          console.log(this.message);
-          },
+this.tripDataService.getTrip(tripCode)
+  .subscribe({
+    next: (value: any) => {
+      this.trip = value[0];
+      
+      // Format the date for the input field
+      let startDate = '';
+      if (value[0].start) {
+        startDate = new Date(value[0].start).toISOString().split('T')[0];
+      }
+      
+      // Populate our record into the form
+      this.editForm.patchValue({
+        _id: value[0]._id,
+        code: value[0].code,
+        name: value[0].name,
+        length: value[0].length,
+        start: startDate,  // Use the formatted date
+        resort: value[0].resort,
+        perPerson: value[0].perPerson,
+        image: value[0].image,
+        description: value[0].description
+      });
+      
+      if(!value)
+      {
+        this.message = 'No Trip Retrieved!';
+      }
+      else{
+        this.message = 'Trip: ' + tripCode + ' retrieved';
+      }
+      console.log(this.message);
+    },
           error: (error: any) => {
             console.log('Error: ' + error);
         }

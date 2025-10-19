@@ -18,7 +18,7 @@ const tripsList = async(req, res) => {
     { // Database returned no data
         return res
             .status(404)
-            .json(err);
+            .json({ message: 'No trips found' });
     } else { // Return resulting trip list
         return res  
             .status(200)
@@ -42,7 +42,7 @@ const tripsFindByCode = async(req, res) => {
     { // Database returned no data
         return res
                 .status(404)
-            .json(err);
+            .json({ message: 'Trip not found' });
         } else { // Return resulting trip list
             return res
                 .status(200)
@@ -52,7 +52,7 @@ const tripsFindByCode = async(req, res) => {
 
 
 // POST: /trips - Adds a new Trip
-// REgardless of outcome, response must include HTML status code
+// Regardless of outcome, response must include HTML status code
 // and JSON message to the requesting client
 const tripsAddTrip = async(req, res) => {
     const newTrip = new Trip ({
@@ -71,7 +71,7 @@ const tripsAddTrip = async(req, res) => {
         { // Database returned no data
             return res
                 .status(400)
-                .json(err);
+                .json({ message: 'Failed to add trip'});
         } else { // Return new trip
             return res
                 .status(201)
@@ -112,7 +112,7 @@ const tripsAddTrip = async(req, res) => {
             { // Database returned no data
                 return res
                     .status(400)
-                    .json(err);
+                    .json({message: 'Trip not found' });
             
             } else { // Return resulting updated trip
                 return res
@@ -125,10 +125,34 @@ const tripsAddTrip = async(req, res) => {
                 // console.log(q);
     };
 
+    // DELETE: /trips/:tripCode - Deletes a trip
+    // Regardless of outcome, response must include HTML status code
+    // and JSON message to teh requesting client
+    const tripsDeleteTrip = async(req, res) => {
+        console.log(req.params);
+        
+        const q = await Model
+            .findOneAndDelete({ 'code': req.params.tripCode })
+            .exec();
+
+        if(!q) {
+            // Database returned no data
+            return res
+                .status(404)
+                .json({message: 'Trip not found' });
+        } else { 
+            // Return deleted trip
+            return res
+                .status(200)
+                .json(q);
+        }
+    };
+
 
 module.exports = {
     tripsList,
     tripsFindByCode,
     tripsAddTrip,
-    tripsUpdateTrip
+    tripsUpdateTrip,
+    tripsDeleteTrip
 };
