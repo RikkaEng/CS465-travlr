@@ -118,7 +118,7 @@ img {
 	font-size: 15px;
 	line-height: 30px;
 	margin: 0;
-	padding: 0 0 24px 2px;
+	padding: 0 0 0px 2px;
 }
 #contents p a {
 	color: #5a4535;
@@ -328,7 +328,8 @@ hr {
 }
 /** Dive Site **/
 #sites li {
-	padding-bottom: 0;
+	padding-bottom: 30px; 
+	overflow: hidden; 
 }
 #sites li img {
 	float: right;
@@ -543,3 +544,82 @@ hr {
 #connect a.googleplus:hover {
 	background-position: 0 -197px;
 }
+
+/* Search Bar Styles */
+.search-bar {
+  margin: 20px 0 30px 0;
+  padding: 20px;
+  background: #f5f0e8;
+  border: 1px solid #b7b7b7;
+  border-radius: 0;  /* Your site doesn't use rounded corners much */
+}
+
+.search-form {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 250px;
+  padding: 10px 15px;
+  border: 1px solid #5a4535;
+  border-radius: 2px;
+  font-size: 15px;
+  font-family: "Times New Roman", Times, serif;
+  color: #5a4535;
+}
+
+.search-button {
+  padding: 10px 20px;
+  background: #2c9688;  /* Matches your site's teal/green */
+  color: #fff;
+  border: 1px solid #316e66;
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: Arial, Helvetica, sans-serif;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.search-button:hover {
+  background: #316e66;  /* Darker green on hover */
+}
+
+.clear-search {
+  padding: 10px 15px;
+  color: #5a4535;
+  text-decoration: none;
+  border: 1px solid #5a4535;
+  border-radius: 2px;
+  font-size: 14px;
+  font-family: Arial, Helvetica, sans-serif;
+  text-transform: uppercase;
+}
+
+.clear-search:hover {
+  background: #e4e1bd;
+  color: #316e66;
+}
+
+.search-results-info {
+  margin-top: 10px;
+  color: #5a4535;
+  font-size: 15px;
+  font-family: "Times New Roman", Times, serif;
+}
+
+.message {
+  padding: 15px;
+  background: #fff3cd;
+  border: 1px solid #9c8964;
+  border-radius: 2px;
+  margin: 15px 0 20px 0;
+  color: #5a4535;
+  font-size: 15px;
+  line-height: 24px;
+}
+

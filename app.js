@@ -3,25 +3,27 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-var handlebars = require('hbs'); // <-- added handle bars
+var handlebars = require('hbs'); 
 var passport = require('passport');
+
+const mongoSanitize = require('express-mongo-sanitize');
 
 // Bring in our environment file, environemtn variable capabilities
 require('dotenv').config();
 require('./app_api/models/db');        // MOVE HERE
 require('./app_api/config/passport');  // AFTER DB
 
-var indexRouter = require('./app_server/routes/index'); // <-- changed new paths
-var usersRouter = require('./app_server/routes/users'); // <-- changed new paths
-var travelRouter = require('./app_server/routes/travel'); // <-- added
-var apiRouter = require('./app_api/routes/index'); // <-- added module 5
+var indexRouter = require('./app_server/routes/index'); 
+var usersRouter = require('./app_server/routes/users'); 
+var travelRouter = require('./app_server/routes/travel'); 
+var apiRouter = require('./app_api/routes/index'); 
 
 var app = express();
 
 // view engine setup
-app.set('views', path.join(__dirname, 'app_server', 'views')); // <-- changed
+app.set('views', path.join(__dirname, 'app_server', 'views')); 
 app.set('view engine', 'hbs');
-handlebars.registerPartials(__dirname + '/app_server/views/partials'); // <--- added handle bars
+handlebars.registerPartials(__dirname + '/app_server/views/partials'); 
 
 
 
@@ -31,6 +33,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(passport.initialize());
+app.use(mongoSanitize());
 
 // Enable CORS
 app.use('/api', (req, res, next) => {

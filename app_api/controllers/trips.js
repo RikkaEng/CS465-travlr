@@ -55,46 +55,46 @@ const tripsFindByCode = async(req, res) => {
 // Regardless of outcome, response must include HTML status code
 // and JSON message to the requesting client
 const tripsAddTrip = async(req, res) => {
-    const newTrip = new Trip ({
-            code:req.body.code,
-            name: req.body.name,
-            length: req.body.length,
-            start: req.body.start,
-            resort: req.body.resort,
-            perPerson: req.body.perPerson,
-            image: req.body.image,
-            description: req.body.description
+    const newTrip = new Trip({
+        code: req.body.code,
+        name: req.body.name,
+        length: req.body.length,
+        start: req.body.start,
+        resort: req.body.resort,
+        perPerson: req.body.perPerson,
+        image: req.body.image,
+        description: req.body.description
     });
 
-    const q = await newTrip.save();
-        if(!q)
-        { // Database returned no data
+    try {
+        const q = await newTrip.save();
+        return res
+            .status(201)
+            .json(q);
+    } catch(err) {
+        // Mongoose validation errors come through here automatically
+        if (err.name === 'ValidationError') {
             return res
                 .status(400)
-                .json({ message: 'Failed to add trip'});
-        } else { // Return new trip
-            return res
-                .status(201)
-                .json(q);    
+                .json({ 
+                    message: 'Validation failed', 
+                    errors: Object.values(err.errors).map(e => e.message)
+                });
         }
-
-        // Uncomment the following line to show results of operation
-        // on the console
-        // console.log(q);
-    };
+        return res
+            .status(400)
+            .json({ message: 'Failed to add trip', error: err.message });
+    }
+};
 
     // PUT: /trips/:tripCode - Adds a new Trip
     // Regardless of outcome, response must include HTML status code
     // and JSON message to the requesting client
     const tripsUpdateTrip = async(req, res) => {
-    
-        // Uncomment for debugging
-        console.log(req.params);
-        console.log(req.body);
-
+    try {
         const q = await Model
             .findOneAndUpdate(
-                { 'code' : req.params.tripCode },
+                { 'code': req.params.tripCode },
                 {
                     code: req.body.code,
                     name: req.body.name,
@@ -104,26 +104,38 @@ const tripsAddTrip = async(req, res) => {
                     perPerson: req.body.perPerson,
                     image: req.body.image,
                     description: req.body.description
+                },
+                { 
+                    new: true,           // Return the updated document
+                    runValidators: true  // Important! This runs schema validation on updates
                 }
             )
             .exec();
 
-            if(!q)
-            { // Database returned no data
-                return res
-                    .status(400)
-                    .json({message: 'Trip not found' });
-            
-            } else { // Return resulting updated trip
-                return res
-                    .status(201)
-                    .json(q);
-                }
-
-                // Uncomment the following line to show results of operation
-                // on the console
-                // console.log(q);
-    };
+        if (!q) {
+            return res
+                .status(404)
+                .json({ message: 'Trip not found' });
+        } else {
+            return res
+                .status(200)
+                .json(q);
+        }
+    } catch(err) {
+        // Mongoose validation errors come through here automatically
+        if (err.name === 'ValidationError') {
+            return res
+                .status(400)
+                .json({ 
+                    message: 'Validation failed', 
+                    errors: Object.values(err.errors).map(e => e.message)
+                });
+        }
+        return res
+            .status(500)
+            .json({ message: 'Update failed', error: err.message });
+    }
+};
 
     // DELETE: /trips/:tripCode - Deletes a trip
     // Regardless of outcome, response must include HTML status code
@@ -149,10 +161,63 @@ const tripsAddTrip = async(req, res) => {
     };
 
 
+
+// Adding new search function to controller
+// GET: /trips/search?q=searchTerm - searches trips by name, resort, or description
+const tripsSearch = async(req, res) => {
+    const searchTerm = req.query.q;
+    
+    if (!searchTerm) {
+        // If no search term, return all trips
+        return tripsList(req, res);
+    }
+
+    // Sanitize and validate search term
+    if (typeof searchTerm !== 'string' || searchTerm.length > 100) {
+        return res
+            .status(400)
+            .json({ message: 'Invalid search term'});
+    }
+
+    const sanitizedTerm = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+
+    try {
+        // Use regex for case-insensitive partial matching
+        // The indexes on 'name' and 'code' will help optimize these queries
+        const q = await Model
+            .find({
+                $or: [
+                    { name: { $regex: sanitizedTerm, $options: 'i' } },
+                    { resort: { $regex: sanitizedTerm, $options: 'i' } },
+                    { description: { $regex: sanitizedTerm, $options: 'i' } },
+                    { code: { $regex: sanitizedTerm, $options: 'i' } }
+                ]
+            })
+            .exec();
+
+        if (!q || q.length === 0) {
+            return res
+                .status(404)
+                .json({ message: 'No trips found matching your search' });
+        } else {
+            return res
+                .status(200)
+                .json(q);
+        }
+    } catch (err) {
+        return res
+            .status(500)
+            .json({ message: 'Search error', error: err.message });
+    }
+};
+
+
 module.exports = {
     tripsList,
     tripsFindByCode,
     tripsAddTrip,
     tripsUpdateTrip,
-    tripsDeleteTrip
+    tripsDeleteTrip,
+    tripsSearch
 };

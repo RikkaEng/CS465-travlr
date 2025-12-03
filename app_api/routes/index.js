@@ -65,11 +65,16 @@ router
     .get(tripsController.tripsList) // GET Method routes tripList
     .post(authenticateJWT, tripsController.tripsAddTrip); // POST Method Adds a Trip
 
+// Add this BEFORE the /trips/:tripCode route
+router
+    .route('/trips/search')
+    .get(tripsController.tripsSearch);
+
 // GET Method routes tripsFindByCode - requires parameter <-- added module 5 expanding
 router
     .route('/trips/:tripCode')
     .get(tripsController.tripsFindByCode)
-    .put(tripsController.tripsUpdateTrip)
+    .put(authenticateJWT, tripsController.tripsUpdateTrip)
     .delete(authenticateJWT, tripsController.tripsDeleteTrip);
 
 

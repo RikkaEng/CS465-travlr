@@ -1,0 +1,18 @@
+<div class="search-bar">
+  <form action="/travel" method="GET" class="search-form">
+    <input 
+      type="text" 
+      name="q" 
+      placeholder="Search trips by destination, resort, or description..." 
+      value="{{searchTerm}}"
+      class="search-input"
+    >
+    <button type="submit" class="search-button">Search</button>
+    {{#if searchTerm}}
+      <a href="/travel" class="clear-search">Clear Search</a>
+    {{/if}}
+  </form>
+  {{#if searchTerm}}
+    <p class="search-results-info">Showing results for: <strong>{{searchTerm}}</strong></p>
+  {{/if}}
+</div>

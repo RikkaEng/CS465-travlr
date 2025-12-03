@@ -1,0 +1,34 @@
+/* Make all cards the same height */
+.card-deck {
+  display: flex;
+  height: 100%;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+/* Push button container to the bottom */
+.card-body > div {
+  margin-top: auto;
+}
+
+/* Make columns equal height */
+.col-md-4 {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+/* Make the Angular component fill the column */
+app-trip-card {
+  display: flex;
+  width: 100%;
+}

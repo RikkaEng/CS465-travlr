@@ -1,40 +1,47 @@
 const tripsEndpoint = 'http://localhost:3000/api/trips'; // <<-- added
+const searchEndpoint = 'http://localhost:3000/api/trips/search';
+
 const options = {
     method: 'GET',
     headers: {
         'Accept': 'application/json'
     }
-} // <<-- added
+};
 
-// var fs = require('fs');                                               // <<-- added
-// var trips = JSON.parse(fs.readFileSync('./data/trips.json', 'utf8')); // <<-- added
-
-/* GET travel view */
-//const travel = (req, res) => {
-//    res.render ('travel', { title: 'Travlr Getaways', trips}); // <-- added trips changed
-//};
-
-
-/* GET travel view */
+/* GET travel view with optional search */
 const travel = async function(req, res, next) {
-    //console.log('TRAVEL CONTROLLER BEGIN');
-    await fetch(tripsEndpoint, options)
+    const searchTerm = req.query.q || '';
+    
+    // Determine which endpoint to use
+    let endpoint = tripsEndpoint;
+    if (searchTerm) {
+        endpoint = `${searchEndpoint}?q=${encodeURIComponent(searchTerm)}`;
+    }
+    
+    await fetch(endpoint, options)
         .then(res => res.json())
         .then(json => {
-                // console.log(json);
-                let message = null;
-                if(!(json instanceof Array)) {
-                    message = 'API lookup error';
-                    json = [];
-                } else {
-                    if(!json.length){
+            let message = null;
+            if(!(json instanceof Array)) {
+                message = 'API lookup error';
+                json = [];
+            } else {
+                if(!json.length){
+                    if (searchTerm) {
+                        message = `No trips found matching "${searchTerm}"`;
+                    } else {
                         message = 'No trips exist in our database!';
                     }
                 }
-                res.render('travel', {title: 'Travlr Getaways', trips: json, message});
+            }
+            res.render('travel', {
+                title: 'Travlr Getaways', 
+                trips: json, 
+                message,
+                searchTerm  // Pass search term to template
+            });
         })
-        .catch(err => res.status(500).send(e.message));
-        // console.log('TRAVEL fCONTROLLER AFTER RENDER');
+        .catch(err => res.status(500).send(err.message));
 };
 
 module.exports = {
